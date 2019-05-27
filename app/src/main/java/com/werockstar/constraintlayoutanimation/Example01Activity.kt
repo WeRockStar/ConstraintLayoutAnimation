@@ -6,34 +6,29 @@ import android.support.v7.app.AppCompatActivity
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.view.animation.LinearInterpolator
-import android.view.animation.OvershootInterpolator
 import kotlinx.android.synthetic.main.activity_example01.*
 
 class Example01Activity : AppCompatActivity() {
 
     private val constraintSetPrevious = ConstraintSet()
     private val constraintSetNext = ConstraintSet()
-    private var altLayout = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_example01)
 
-        constraintSetPrevious.clone(constraint)
+        constraintSetPrevious.clone(constraintRoot)
         constraintSetNext.clone(this, R.layout.activity_example01_alt)
 
-        constraint.setOnClickListener {
+        var altLayout = false
+        constraintRoot.setOnClickListener {
             val transition = ChangeBounds()
             transition.interpolator = LinearInterpolator()
-            TransitionManager.beginDelayedTransition(constraint, transition)
+            TransitionManager.beginDelayedTransition(constraintRoot, transition)
 
-            if (altLayout) {
-                constraintSetPrevious.applyTo(constraint)
-                altLayout = false
-            } else {
-                constraintSetNext.applyTo(constraint)
-                altLayout = true
-            }
+            val constraint = if (altLayout) constraintSetPrevious else constraintSetNext
+            constraint.applyTo(constraintRoot)
+            altLayout = !altLayout
         }
     }
 }
